@@ -5,9 +5,11 @@ body{
 video {
   border:thin black solid;
   width:500px;
-  height:500px
+  height:auto;
+  border-radius: 20px;
 }
 
 #screencontainer{
   display: flex;
+  gap: 100px;
 }
