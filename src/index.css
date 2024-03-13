@@ -1,0 +1,9 @@
+body{
+  background-color: white;
+}
+
+video {
+  border:thin black solid;
+  width:500px;
+  height:500px
+}
