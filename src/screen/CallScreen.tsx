@@ -1,39 +1,48 @@
 import { useEffect, useRef ,useState} from 'react'
-import Peer from 'peerjs'
+import Peer, { PeerOptions } from 'peerjs'
 import SideBar from '../components/SideBar'
 import Video from '../components/Video'
 
 const CallScreen = () => {
    const video = useRef<HTMLVideoElement>(null)
    const remoteVideo=useRef<HTMLVideoElement>(null)
-   const peerRef=useRef<Peer>(null)
+   const peerRef=useRef<Peer | null>(null)
    const [peerId,setPeerId] = useState<string>('')
-   const [remoteId,setRemoteId]=useState<string>('')
+   //const [remoteId,setRemoteId]=useState<string>('')
+   const [userStreamStarted,setUserStreamStarted] =useState<boolean>(false)
+   const [remoteStreamStarted,setRemoteStreamStarted]=useState<boolean>(false)
    const [remoteStream,setRemoteStream] = useState<MediaStream>()
    const [userStream,setUserStream] = useState<MediaStream>()
-   const [showRemoteVideo,setShowRemoteVideo] = useState<boolean>(true)
+   const peerOptions:PeerOptions= {
+    config: {'iceServers': [
+      { url: 'stun:stun.l.google.com:19302' },
+    {url :'stun:stun1.l.google.com:19302'},
+    {url : 'stun:stun2.l.google.com:19302'},
+      ]}}
    let showVideo=false
    let muteAudio=false
-   let onRemoteSpeaker=true
+   let showRemoteVideo=true
+   let muteRemoteAudio=false
 
    const toggleVideo=()=>{
         showVideo=!showVideo
-        userStream.getVideoTracks()[0].enabled=showVideo
+        userStream && (userStream.getVideoTracks()[0].enabled=showVideo)
    }
 
    const toggleAudio=()=>{
     muteAudio=!muteAudio
-    userStream.getAudioTracks()[0].enabled=!muteAudio
+    userStream && (userStream.getAudioTracks()[0].enabled=!muteAudio)
 }
 
 
    const toggleRemoteVideo=()=>{
-    setShowRemoteVideo(!showRemoteVideo)
+    showRemoteVideo=!showRemoteVideo
+    remoteStream && (remoteStream.getVideoTracks()[0].enabled=showRemoteVideo)
    }
 
    const toggleRemoteAudio=()=>{
-    onRemoteSpeaker=!onRemoteSpeaker
-    remoteVideo.current.volume=0
+    muteRemoteAudio=!muteRemoteAudio
+    remoteStream && (remoteStream.getAudioTracks()[0].enabled=muteRemoteAudio)
    }
 
    const getStream= async ()=>{
@@ -48,6 +57,7 @@ const CallScreen = () => {
    }
 
    const call=async (remoteId:string)=>{
+    if(!video.current) return
     const stream=await getStream()
     stream.getVideoTracks()[0].enabled=showVideo
     video.current.srcObject=stream
@@ -57,9 +67,11 @@ const CallScreen = () => {
         if(!remoteVideo.current) return
         console.log("Callers Stream is ",remoteStream)
         remoteVideo.current.srcObject=remoteStream
+        setRemoteStreamStarted(true)
         setRemoteStream(remoteStream)
     })
     setUserStream(stream)
+    setUserStreamStarted(true)
    }
 
    function createRandomString(length:number) {
@@ -72,7 +84,7 @@ const CallScreen = () => {
   }
 
    useEffect(()=>{
-    const peer=new Peer('iyke_'+createRandomString(10)+'_code')    
+    const peer=new Peer('iyke_'+createRandomString(10)+'_code',peerOptions)    
     setPeerId('Generating Peer ID . . .')
         peer.on('open',id=>{
             console.log('peer listening')
@@ -89,35 +101,25 @@ const CallScreen = () => {
                 call.answer(await stream)
                 setUserStream(await stream)
                 video.current.srcObject=await stream
+                setUserStreamStarted(true)
                 stream.getVideoTracks()[0].enabled=showVideo
                 call.on('stream',remoteStream=>{
                 if(!remoteVideo.current) return
                 remoteVideo.current.srcObject=remoteStream
                 console.log("Answer Stream is ",remoteStream)
                 setRemoteStream(remoteStream)
+                setRemoteStreamStarted(true)
             })
             }
         })
 
+        peer.on('error',(err:Error)=>{
+            setPeerId(err.name)
+        })
        peerRef.current=peer
    },[]
    )
 
-    const startVideo=async ()=>{
-        if(userStream){
-            userStream.getTracks().forEach((track:MediaStreamTrack)=>track.stop())
-            setUserStream(null)   
-            return
-        }
-        const stream =await navigator.mediaDevices.getUserMedia({
-            video:{
-                facingMode:{exact:'user'}
-            },
-            audio:true})
-        video.current.srcObject=stream
-        console.log("stream saved",stream)
-        setUserStream(stream)
-    }
 
   return (
     <>
@@ -126,10 +128,14 @@ const CallScreen = () => {
         height:'520px',
     }
     }>
-    <SideBar peerId={peerId} setRemoteId={setRemoteId} call={call} remoteId={remoteId}/>
+    <SideBar peerId={peerId}  call={call} />
     <div id="screencontainer">
-        <Video videoRef={video} user leftBtnFun={toggleVideo} showVideo={true} rightBtnFun={toggleAudio}/>
-        <Video videoRef={remoteVideo} leftBtnFun={toggleRemoteVideo} showVideo={showRemoteVideo}
+        <Video videoRef={video} 
+        streamStarted={userStreamStarted}
+        user leftBtnFun={toggleVideo} showVideo rightBtnFun={toggleAudio}/>
+        <Video videoRef={remoteVideo} 
+        streamStarted={remoteStreamStarted}
+        leftBtnFun={toggleRemoteVideo} showVideo={false} 
         rightBtnFun={toggleRemoteAudio}/>
     </div>
     </div>

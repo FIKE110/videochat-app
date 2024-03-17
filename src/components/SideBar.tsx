@@ -5,9 +5,8 @@ import EndCallIcon2 from '../assets/icons8-end-call-50 (1).png'
 import { useRef, useState } from 'react'
 
 
-const SideBar = ({peerId,setRemoteId,remoteId,call}:
-  {peerId:string,setRemoteId:Function,remoteId:string
-  call:Function}) => {
+const SideBar = ({peerId,call}:
+  {peerId:string,call:Function}) => {
   const [callIcon,setCallIcon] = useState<string>(CallIcon)
   const [endCallIcon,setEndCallIcon] =useState<string>(EndCallIcon)
   const inputRef=useRef<HTMLInputElement>(null)
@@ -28,7 +27,8 @@ const SideBar = ({peerId,setRemoteId,remoteId,call}:
 
                  onMouseOut={()=>setCallIcon(CallIcon)}
 
-                 onClick={()=>call(inputRef.current.value)}
+                 onClick={()=>{
+                  inputRef.current && call(inputRef.current.value)}}
                  >
                   <img src={callIcon} />
                 </button>
