@@ -2,6 +2,8 @@ import { useEffect, useRef ,useState} from 'react'
 import Peer, { PeerOptions } from 'peerjs'
 import SideBar from '../components/SideBar'
 import Video from '../components/Video'
+import OptionsButton from '../components/OptionsButton'
+import OptionsMenuBar from '../components/OptionsMenuBar'
 
 const CallScreen = () => {
    const video = useRef<HTMLVideoElement>(null)
@@ -129,7 +131,12 @@ const CallScreen = () => {
     }
     }>
     <SideBar peerId={peerId}  call={call} />
-    <div id="screencontainer">
+    <div style={{display:'flex',flexDirection:'column'}}>
+        <div id="extrascontainer" style={{width:'100%',display:'flex',justifyContent:'flex-end',padding:20}}>
+        <OptionsButton />
+        <OptionsMenuBar />
+       </div>
+       <div id="screencontainer"> 
         <Video videoRef={video} 
         streamStarted={userStreamStarted}
         user leftBtnFun={toggleVideo} showVideo rightBtnFun={toggleAudio}/>
@@ -138,6 +145,8 @@ const CallScreen = () => {
         leftBtnFun={toggleRemoteVideo} showVideo={false} 
         rightBtnFun={toggleRemoteAudio}/>
     </div>
+    </div>
+   
     </div>
     </>
   )
