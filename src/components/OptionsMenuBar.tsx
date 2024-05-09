@@ -1,5 +1,6 @@
 import OptionsIcon from "./OptionsIcon"
 import '../styles/options.css'
+<<<<<<< HEAD
 import { useEffect, useRef, useState } from "react"
 
 const OptionsMenuBar = ({display,setBtnDisabled,displayMenu,showChatBox}:
@@ -41,6 +42,14 @@ const OptionsMenuBar = ({display,setBtnDisabled,displayMenu,showChatBox}:
     <div id='options-menubar-container' style={{display:displayMenu}} ref={optionscontainerRef}>
         <div id='options-menubar' style={{opacity:Number(!showOptions)}}>
             <OptionsIcon handleFunction={showChatBox} defaultVal={false}/>
+=======
+
+const OptionsMenuBar = () => {
+  return (
+    <div id='options-menubar-container'>
+        <div id='options-menubar'>
+            <OptionsIcon />
+>>>>>>> refs/remotes/origin/main
             <OptionsIcon />
             <OptionsIcon />
             <OptionsIcon />
@@ -49,5 +58,8 @@ const OptionsMenuBar = ({display,setBtnDisabled,displayMenu,showChatBox}:
   )
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/main
 export default OptionsMenuBar

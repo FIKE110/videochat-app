@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import  optionsIcon from '../assets/icons8-three-dots-50.png'
 
 const OptionsButton = (
@@ -12,6 +13,15 @@ const OptionsButton = (
               setDisplayMenu('block')
             }}
             style={{
+=======
+import React from 'react'
+import  optionsIcon from '../assets/icons8-three-dots-50.png'
+
+const OptionsButton = () => {
+  return (
+    <div>
+        <button style={{
+>>>>>>> refs/remotes/origin/main
             border:'none',
             padding:3,
             borderRadius:7,
