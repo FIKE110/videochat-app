@@ -48,11 +48,7 @@ const CallScreen = () => {
    }
 
    const getStream= async ()=>{
-    const stream = await navigator.mediaDevices.getUserMedia({
-        video:{
-            facingMode:{exact:'user'}
-        },
-        audio:true})
+    const stream = await navigator.mediaDevices.getUserMedia(constraints)
 
         return stream
 
@@ -84,6 +80,19 @@ const CallScreen = () => {
     }
     return result;
   }
+
+  const constraints = {
+    video: {
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
+      facingMode: 'environment' // or 'user' for front-facing camera
+    },
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true
+    }
+  };
 
    useEffect(()=>{
     const peer=new Peer('iyke_'+createRandomString(10)+'_code',peerOptions)    
