@@ -1,0 +1,60 @@
+#options-menubar-container{
+    position: absolute;
+    top:70px;
+    background-color: #7a1bad9c;
+    width:350px;
+    border-radius: 13px;
+    height:fit-content;
+    padding: 20px;
+}
+
+#options-menubar{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 25px;
+    row-gap: 25px;
+}
+
+#options-menubar-container .options-icon{
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+
+#options-menubar-container .options-icon img{
+    width:35px;
+    height:auto
+}
+
+#options-menubar-container .options-icon p{
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+@keyframes slideBack {
+    to{
+        width:0px;
+        padding: 0px;
+    }
+}
+
+@keyframes slideFront {
+    from{
+        width: 0px;
+        padding: 0px;
+    }
+    to{
+        width:350px;
+        padding: 20px;
+    }
+}
