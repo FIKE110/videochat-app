@@ -13,6 +13,7 @@ const CallScreen = () => {
    const [remoteStreamStarted,setRemoteStreamStarted]=useState<boolean>(false)
    const [remoteStream,setRemoteStream] = useState<MediaStream>()
    const [userStream,setUserStream] = useState<MediaStream>()
+   
    const peerOptions:PeerOptions= {
     config: {'iceServers': [
       { url: 'stun:stun.l.google.com:19302' },
