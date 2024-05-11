@@ -3,11 +3,10 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/scrollbar';
-import { FreeMode, Scrollbar, Mousewheel } from 'swiper/modules';
+import { Scrollbar, Mousewheel } from 'swiper/modules';
 
 // Import Swiper styles
 import 'swiper/css';
-import { Children, ReactNode } from 'react';
 
 export default function SwiperComponent ({children}:{children:React.ReactNode[]}) {
   return (

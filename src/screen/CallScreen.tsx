@@ -111,7 +111,7 @@ const CallScreen = () => {
     setUserStreamStarted(true)
    }
 
-   function createRandomString(length:number) {
+/*   function createRandomString(length:number) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
     for (let i = 0; i < length; i++) {
@@ -120,6 +120,7 @@ const CallScreen = () => {
     return result;
   }
 
+  */
   const constraints = {
     video: {
       width: { ideal: 1280 },

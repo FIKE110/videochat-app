@@ -26,7 +26,6 @@ const style = {
 
 function BasicModal() {
   const {openModal,setOpenModal} = useContext(createModalContext)
-  const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
 
   return (
@@ -48,7 +47,7 @@ function BasicModal() {
 
 const ChatBar = (props:any) => {
   const useModalContext=React.useContext(createModalContext)
-  const {InputMessageRef,sendMessage,chats,peerId} =useModalContext
+  const {InputMessageRef,sendMessage,chats} =useModalContext
   return (
     <div id='chat-box'>
           <Box sx={{display:'flex',justifyContent:'flex-end'}}>

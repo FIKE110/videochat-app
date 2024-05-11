@@ -1,4 +1,3 @@
-import React from 'react'
 import Box from '@mui/material/Box'
 import Card from '@mui/joy/Card';
 import Typography from '@mui/joy/Typography';
