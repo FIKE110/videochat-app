@@ -1,23 +1,33 @@
+// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/scrollbar';
+import { FreeMode, Scrollbar, Mousewheel } from 'swiper/modules';
 
 // Import Swiper styles
 import 'swiper/css';
-import { ReactNode } from 'react';
+import { Children, ReactNode } from 'react';
 
-export const SwiperComponent=({children}:{children:ReactNode | ReactNode[]}) => {
+export default function SwiperComponent ({children}:{children:React.ReactNode[]}) {
   return (
     <Swiper
-    id='screencontainer'
-    style={{width:'100%',backgroundColor:'blue'}}
-      spaceBetween={50}
-      slidesPerView={3}
-      onSlideChange={() => console.log('slide change')}
-      onSwiper={(swiper) => console.log(swiper)}
-    >
-
-      {
-        Array.isArray(children) ?children.map(item=> <SwiperSlide>{item}</SwiperSlide>) : <SwiperSlide>children</SwiperSlide>
-      }
-    </Swiper>
+        direction={'vertical'}
+        slidesPerView='auto'
+        initialSlide={children.length}
+        scrollbar={true}
+        mousewheel={true}
+        style={{maxHeight:'350px',display:'flex',flexDirection:'column',paddingRight:'5px'}}
+        modules={[Scrollbar, Mousewheel]}
+        className="mySwiper"
+      >
+        {
+          children && children.map((message,item)=>(
+            <SwiperSlide key={item}>
+              {message}
+            </SwiperSlide>
+          ))
+        }
+      </Swiper>
   );
 };

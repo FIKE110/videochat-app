@@ -13,15 +13,15 @@ const SideBar = ({peerId,call}:
 
   return (
     <div id="sidebar">
-        <div>
-            <div style={{width:'100%',display:'flex',justifyContent:'center',
-            alignItems:'center',marginBottom:70
+        <div style={{width:'100%'}}>
+            <div id='input-container' style={{width:'100%',display:'flex',justifyContent:'center',
+            alignItems:'center'
         }}>
                 <input type='text' ref={inputRef}
                 placeholder='Input Remote User Peer ID'/>
             </div>
             <div id="call-btn-container">
-              <div>
+              <div style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
                  <button className='call-btn'
                  onMouseOver={()=>setCallIcon(CallIcon2)}
 
@@ -32,9 +32,9 @@ const SideBar = ({peerId,call}:
                  >
                   <img src={callIcon} />
                 </button>
-                <p>Call</p>
+                <p style={{textAlign:'center'}}>Call</p>
               </div>
-               <div>
+               <div style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
                 <button className='call-btn'
                 onMouseOver={()=>{
                   setEndCallIcon(EndCallIcon2)
@@ -51,11 +51,10 @@ const SideBar = ({peerId,call}:
                 
             </div>
         </div>
-        <div style={{marginTop:100}}>
-        <p style={{textAlign:'center'}}>Peer Id</p>
-        <p style={{paddingTop:10,paddingBottom:5,fontWeight:'bold'}}
+        <div id='peerid-container'>
+        <p id='share-with-caller'>Peer Id (Share this to caller)</p>
+        <p style={{paddingTop:3,paddingBottom:10,fontWeight:'bold',color:'white',textAlign:'center'}}
         >{peerId}</p>
-        <p>Share this to the caller</p>
         </div>
     </div>
   )
