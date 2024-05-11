@@ -207,14 +207,14 @@ const CallScreen = () => {
       <createModalContext.Provider value={{sendMessage,InputMessageRef,chats,peerId,openModal,setOpenModal}}>
       <BasicModal />
     </createModalContext.Provider>
+    <Toast open={openSucessMessage} setOpen={setOpenSuccessMessage}/>
+    
       <createDialContext.Provider value={{setOpenModal}}> 
       <div id='dial'>
         <Dial />
       </div>
         
       </createDialContext.Provider>
-    <Toast open={openSucessMessage} setOpen={setOpenSuccessMessage}/>
-    
     </div>
     </div>
    
