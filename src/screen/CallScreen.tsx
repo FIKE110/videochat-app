@@ -1,27 +1,24 @@
 import { createContext, useEffect, useRef ,useState} from 'react'
-import { Props } from 'react-input-emoji'
 import Peer, { DataConnection, PeerOptions } from 'peerjs'
 import SideBar from '../components/SideBar'
 import Video from '../components/Video'
 import BasicModal from '../components/ChatBar'
 import Toast from '../components/Toast'
 import Dial from '../components/Dial'
-import AlertComponent from '../components/AlertComponent'
 
-type chatsType={
+export type chatsType={
   id:string,
   no:number,
   message:string
 }
 
-export const createModalContext=createContext(null)
-export const createDialContext=createContext(null)
+export const createModalContext=createContext<any>(null)
+export const createDialContext=createContext<any>(null)
 
 const CallScreen = () => {
    const video = useRef<HTMLVideoElement>(null)
-   const InputMessageRef=useRef(null)
+   const InputMessageRef=useRef<HTMLInputElement>(null)
    const [openModal,setOpenModal]=useState(false)
-   const [message,setMessage]=useState('')
    const [chats,setChats] = useState<chatsType[]>([])
    const [openSucessMessage,setOpenSuccessMessage] = useState(false)
    const remoteVideo=useRef<HTMLVideoElement>(null)
@@ -35,7 +32,7 @@ const CallScreen = () => {
    const connectionRef=useRef<DataConnection | null>(null)
 
    const sendMessage=(text:string)=>{
-    InputMessageRef.current.value=''
+    if(InputMessageRef.current) InputMessageRef.current.value=''
     if(connectionRef.current){  
       connectionRef.current.send(text)
       setOpenSuccessMessage(true)

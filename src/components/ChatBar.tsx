@@ -6,7 +6,7 @@ import Textarea from '@mui/joy/Textarea'
 import '../styles/chat-box.css'
 import MessageBubble from './MessageBubble';
 import SwiperComponent from './SwiperComponent';
-import { createModalContext } from '../screen/CallScreen';
+import { chatsType, createModalContext } from '../screen/CallScreen';
 import IconButton from '@mui/joy/IconButton';
 import { useContext } from 'react';
 
@@ -68,7 +68,7 @@ const ChatBar = (props:any) => {
                 flex:10,
             }}>
                 <SwiperComponent>
-                  {chats.map(message=>(
+                  {chats.map((message:chatsType)=>(
                     <MessageBubble message={message.message} sender={message.id==='you'}/>
                   ))}  
                 </SwiperComponent>     
