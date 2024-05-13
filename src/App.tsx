@@ -6,8 +6,8 @@ import CallScreen from './screen/CallScreen'
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path='call' Component={CallScreen}/>
+      <Routes >
+        <Route path='/call' Component={CallScreen}/>
       </Routes>
     </Router>
   )
