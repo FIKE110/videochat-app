@@ -7,7 +7,7 @@ function App() {
   return (
     <Router>
       <Routes >
-        <Route path='/call' Component={CallScreen}/>
+        <Route path='/call' element={<CallScreen />}/>
       </Routes>
     </Router>
   )
