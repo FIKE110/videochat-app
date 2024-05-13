@@ -10,7 +10,6 @@ import { chatsType, createModalContext } from '../screen/CallScreen';
 import IconButton from '@mui/joy/IconButton';
 import { useContext } from 'react';
 
-
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -48,6 +47,7 @@ function BasicModal() {
 const ChatBar = (props:any) => {
   const useModalContext=React.useContext(createModalContext)
   const {InputMessageRef,sendMessage,chats} =useModalContext
+ 
   return (
     <div id='chat-box'>
           <Box sx={{display:'flex',justifyContent:'flex-end'}}>
@@ -84,14 +84,16 @@ const ChatBar = (props:any) => {
         }}>
             <Textarea style={{flex:8}} 
             autoFocus
+            onKeyDown={e=>{
+              if(e.key==='Enter'){
+                e.preventDefault()
+                sendMessage(InputMessageRef.current.value)}
+            }}
              slotProps={{ textarea: { ref: InputMessageRef } }}
-            maxRows={4} name="Solid" placeholder="Type in here…" variant="solid" />
+            maxRows={3} name="Solid" placeholder="Type in here…" variant="solid" />
             <Button style={{backgroundColor:'#7a1bad',flex:1}} variant='contained' color='primary'
             onClick={()=>{
-              const message=InputMessageRef.current.value
-              if(message.length < 1 ) return 
               sendMessage(InputMessageRef.current.value)
-              InputMessageRef.current.value=''
             }}
             
             >Send</Button>

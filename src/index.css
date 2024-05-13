@@ -64,6 +64,10 @@ video {
   border:3px #9b029b9a solid;
 }
 
+.copy:hover{
+  opacity: 0.4;
+}
+
 #sideinput input::placeholder{
   color:#7a1bad75
 }

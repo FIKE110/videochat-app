@@ -5,6 +5,9 @@ import Video from '../components/Video'
 import BasicModal from '../components/ChatBar'
 import Toast from '../components/Toast'
 import Dial from '../components/Dial'
+import toast, { Toaster } from 'react-hot-toast';
+import NotficationMusic from '../assets/happy-pop-3-185288.mp3'
+import ExtraComponentModal from '../components/ExtrasComponent'
 
 export type chatsType={
   id:string,
@@ -15,8 +18,22 @@ export type chatsType={
 export const createModalContext=createContext<any>(null)
 export const createDialContext=createContext<any>(null)
 
+export const copyToClipBoard=(text:string,message:string)=>{
+  navigator.clipboard.writeText(text)
+  .then(()=>{
+    toast.success(message,{
+      style:{
+        fontWeight:'bold'
+      }
+    })
+  })
+  .catch(()=>toast.error('Could not copy to clipboard'))
+
+}
+
 const CallScreen = () => {
    const video = useRef<HTMLVideoElement>(null)
+   const notificationAudioRef=useRef<HTMLAudioElement>(null)
    const InputMessageRef=useRef<HTMLInputElement>(null)
    const [openModal,setOpenModal]=useState(false)
    const [chats,setChats] = useState<chatsType[]>([])
@@ -30,18 +47,162 @@ const CallScreen = () => {
    const [remoteStream,setRemoteStream] = useState<MediaStream>()
    const [userStream,setUserStream] = useState<MediaStream>()
    const connectionRef=useRef<DataConnection | null>(null)
+   const [openExtraModal,setOpenExtraModal] = useState(false)
+
+   function createNewPeer(){
+    const onPeerCreated = new Event('onpeercreated');
+    const onPeerCreatedError = new Event('onpeercreatederror');
+      const searchParams = new URLSearchParams(location.search);
+      const query = searchParams.get('peer-id');
+      const peer=new Peer(peerOptions)
+
+
+      function callEvent(state:string) {
+        // Trigger the event
+        if(state=='peercreated'){
+          document.dispatchEvent(onPeerCreated);}
+        if(state=='peernotcreated'){
+          document.dispatchEvent(onPeerCreatedError)
+        }
+    }
+      const peerOpened = new Promise((resolve, reject) => {
+        console.log('inside the promise')
+        document.addEventListener('onpeercreatederror', function() {
+        reject('foo')
+    });  
+        document.addEventListener('onpeercreated', function() {
+          console.log('hello')
+          resolve('foo')
+      });
+ 
+      });
+
+      toast.promise(
+        peerOpened,
+         {
+           loading: <b>Wait a moment assigning you a peer id ...</b>,
+           success: <b>Peer id successfully assigned</b>,
+           error: <b>Error !!! Could not create Peer Could be a Network/Firewall issue 🤔 </b>,
+         }
+       );
+    setPeerId('Generating Peer ID . . .')
+        peer.on('open',id=>{
+            callEvent('peercreated')
+            console.log('peer listening')
+            console.log(id)
+            setPeerId(id)
+            if(query){
+              call(query)
+            }
+        })
+
+        peer.on('call',async call=>{
+            console.log("user stream is :",userStream)
+            if(!video.current) return
+            const answer=confirm('Ringing !!! Click Ok to answer call')
+            if(answer){
+                const stream=await getStream()
+                call.answer(await stream)
+                setUserStream(await stream)
+                video.current.srcObject=await stream
+                setUserStreamStarted(true)
+                stream.getVideoTracks()[0].enabled=showVideo
+                call.on('stream',remoteStream=>{
+                if(!remoteVideo.current) return
+                remoteVideo.current.srcObject=remoteStream
+                console.log("Answer Stream is ",remoteStream)
+                setRemoteStream(remoteStream)
+                setRemoteStreamStarted(true)
+            })
+            }
+        })
+
+        peer.on('disconnected',()=>{
+          console.log('disconnected')
+          callEvent('peernotcreated')
+          setPeerId('Error')
+        })
+
+        peer.on('error',(err:Error)=>{
+            callEvent('peernotcreated')
+            console.log('error dey oo')
+            setPeerId(err.name)
+        })
+
+        peer.on('connection',conn=>{
+            connectionRef.current=conn
+            conn.on('data',data=>{
+                console.log(data)
+                receiveMessage(data as string)
+                setChats(prev=>[...prev,{no:chats.length,id:'others',message:data as string}])
+                playNotification()
+              })
+        })
+
+       peerRef.current=peer
+   }
+
+   const disconnectPeer=()=>{
+    if(peerRef.current){
+
+      toast.success('Peer successfully disconnected',{
+        style:{
+          fontWeight:'bold'
+        }
+      })
+    }
+   }
+
+   const playNotification=()=>{
+    if(notificationAudioRef.current){
+      notificationAudioRef.current.play()
+    }
+   }
 
    const sendMessage=(text:string)=>{
-    if(InputMessageRef.current) InputMessageRef.current.value=''
+    if(InputMessageRef.current){
+      if(InputMessageRef.current.value.length<1){
+        toast.error("You cannot send an empty message",{
+          style:{fontWeight:'bold'}
+        })
+        return
+      }
+    InputMessageRef.current.value=''
+   // playNotification()
+    }
+
     if(connectionRef.current){  
       connectionRef.current.send(text)
       setOpenSuccessMessage(true)
+    }
+    else{
+      toast.error("You are currently not connected to any peer",{
+        style:{fontWeight:'bold'}
+      }
+      )
     }
     
     console.log(chats)
     setChats([...chats,{no:chats.length,id:'you',message:text}])
    }
    
+   const receiveMessage=(message:string)=>{
+    toast(message,
+  {
+    icon: '🧑',
+    style: {
+      borderRadius: '10px',
+      background: '#333',
+      color: '#fff',
+      fontWeight:'bold',
+      overflow:'hidden'
+    },
+    position:'bottom-right',
+    duration:4000
+  }
+);
+   }
+
    const peerOptions:PeerOptions= {
     config: {'iceServers': [
       { url: 'stun:stun.l.google.com:19302' },
@@ -82,6 +243,14 @@ const CallScreen = () => {
    }
 
    const call=async (remoteId:string)=>{
+    if(peerId === 'Generating Peer ID . . .' || peerId === 'Error'){
+      toast.error('No peerId has been assigned to make a call',{
+        style:{
+          fontWeight:'bold'
+        }
+      })
+      return
+    }
     const connection=peerRef.current?.connect(remoteId)
     if(connection) connectionRef.current=connection
     connection?.on('open',()=>{
@@ -90,6 +259,8 @@ const CallScreen = () => {
 
     connection?.on('data',data=>{
         console.log(data)
+        playNotification()
+        receiveMessage(data as string)
         setChats(prev=>[...prev,{no:chats.length,id:'other',message:data as string}])
     })
 
@@ -109,6 +280,8 @@ const CallScreen = () => {
     })
     setUserStream(stream)
     setUserStreamStarted(true)
+
+    return stream
    }
 
 /*   function createRandomString(length:number) {
@@ -135,51 +308,7 @@ const CallScreen = () => {
   };
 
    useEffect(()=>{
-    const peer=new Peer(peerOptions)    
-    setPeerId('Generating Peer ID . . .')
-        peer.on('open',id=>{
-            console.log('peer listening')
-            console.log(id)
-            setPeerId(id)
-        })
-
-        peer.on('call',async call=>{
-            console.log("user stream is :",userStream)
-            if(!video.current) return
-            const answer=confirm('Ringing !!! Click Ok to answer call')
-            if(answer){
-                const stream=await getStream()
-                call.answer(await stream)
-                setUserStream(await stream)
-                video.current.srcObject=await stream
-                setUserStreamStarted(true)
-                stream.getVideoTracks()[0].enabled=showVideo
-                call.on('stream',remoteStream=>{
-                if(!remoteVideo.current) return
-                remoteVideo.current.srcObject=remoteStream
-                console.log("Answer Stream is ",remoteStream)
-                setRemoteStream(remoteStream)
-                setRemoteStreamStarted(true)
-            })
-            }
-        })
-
-        peer.on('disconnected',()=>{
-          console.log('disconnected')
-        })
-        peer.on('error',(err:Error)=>{
-            setPeerId(err.name)
-        })
-
-        peer.on('connection',conn=>{
-            connectionRef.current=conn
-            conn.on('data',data=>{
-                console.log(data)
-                setChats(prev=>[...prev,{no:chats.length,id:'others',message:data as string}])
-              })
-        })
-
-       peerRef.current=peer
+    createNewPeer()
    },[]
    )
 
@@ -191,8 +320,8 @@ const CallScreen = () => {
         height:'520px',
     }
     }>
-      
-    <SideBar peerId={peerId}  call={call} />
+     <Toaster position='top-right'/>
+    <SideBar peerId={peerId}  call={call} createNewPeer={createNewPeer} disconnectPeer={disconnectPeer}/>
     <div style={{display:'flex',flexDirection:'column'}}>
        <div id="screencontainer"> 
         <Video videoRef={video} 
@@ -204,12 +333,13 @@ const CallScreen = () => {
         rightBtnFun={toggleRemoteAudio}/>
     </div>
     <div id='dial-container'>
-      <createModalContext.Provider value={{sendMessage,InputMessageRef,chats,peerId,openModal,setOpenModal}}>
+      <createModalContext.Provider value={{sendMessage,InputMessageRef,chats,peerId,openModal,setOpenModal,openExtraModal,setOpenExtraModal}}>
       <BasicModal />
+      <ExtraComponentModal />
     </createModalContext.Provider>
     <Toast open={openSucessMessage} setOpen={setOpenSuccessMessage}/>
     
-      <createDialContext.Provider value={{setOpenModal}}> 
+      <createDialContext.Provider value={{setOpenModal,peerId,setOpenExtraModal}}> 
       <div id='dial'>
         <Dial />
       </div>
@@ -217,6 +347,7 @@ const CallScreen = () => {
       </createDialContext.Provider>
     </div>
     </div>
+    <audio ref={notificationAudioRef} src={NotficationMusic} />
    
     </div>
     </>
