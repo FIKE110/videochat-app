@@ -9,6 +9,7 @@ import { useContext } from 'react';
 import { createDialContext } from '../screen/CallScreen';
 import { copyToClipBoard } from '../screen/CallScreen';
 import toast from 'react-hot-toast';
+import { PeerErrorType } from 'peerjs';
 
 const shareLink=async (peerId:string)=>{
   console.log(window.location)
@@ -33,10 +34,22 @@ export default function Dial() {
     
   const actions = [
   { icon: <ViewDayIcon />, name: 'Extras' ,handler:() => setOpenExtraModal(true)},
-  { icon: <ShareIcon />, name: 'Share' ,handler:()=>shareLink(peerId)},
-  { icon: <FileCopyIcon />, name: 'Copy link',handler:()=>copyToClipBoard( `${window.location.origin}/call?peerid=${peerId}`,
-  'Call Link Successfully copied to clipboard'
-  ) },
+  { icon: <ShareIcon />, name: 'Share' ,handler:()=>{
+    if(peerId === 'Generating Peer ID . . .' || peerId === 'Error') shareLink(peerId)}},
+  { icon: <FileCopyIcon />, name: 'Copy link',handler:()=>{
+    if(peerId === 'Generating Peer ID . . .' || peerId==='Error'){
+      toast.error('Could not copy to clipboard',{
+        style:{
+          fontWeight:'bold'
+        }
+      })
+    }
+    else{
+       copyToClipBoard( `${window.location.origin}/call?peerid=${peerId}`,
+ `Call Link Successfully copied to clipboard ${peerId in PeerErrorType}`
+  )
+    }
+    }},
    { icon: <ChatBubbleIcon />, name: 'Chat',handler:()=>setOpenModal(true) },
 ];
 

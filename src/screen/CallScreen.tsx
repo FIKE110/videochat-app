@@ -5,15 +5,64 @@ import Video from '../components/Video'
 import BasicModal from '../components/ChatBar'
 import Toast from '../components/Toast'
 import Dial from '../components/Dial'
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { ToastType, Toaster } from 'react-hot-toast';
 import NotficationMusic from '../assets/happy-pop-3-185288.mp3'
 import ExtraComponentModal from '../components/ExtrasComponent'
+import { Box, Button, Typography } from '@mui/material'
 
 export type chatsType={
   id:string,
   no:number,
   message:string
 }
+
+const notify = () => {
+  return new Promise((resolve) => {
+  const toastRef= toast((t) => (
+      <Box>
+        <Typography>
+          Ringing !!! Answer or Decline Call
+        </Typography>
+        <audio autoPlay loop>
+          <source src="path/to/your/ringtone.mp3" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
+        <Box sx={{display:'flex',justifyContent:'center',alignItems:'center',gap:2,paddingTop:2}}>
+           <Button
+           size='small'
+           color='success'
+           variant='contained'
+        sx={{color:'white',fontSize:'12px'}}
+        onClick={() => handleAnswer(t)}>Answer</Button>
+        <Button 
+        size='small'
+        color='error'
+        variant='contained'
+        sx={{color:'white',fontSize:'12px'}}
+         onClick={() => handleDecline(t)}>Decline</Button>
+        </Box>
+       
+      </Box>
+    ),{
+      style:{
+        fontWeight:'bold',
+        backgroundColor:''
+      },
+      duration:8000,
+      position:'top-center'
+    });
+
+    const handleAnswer = (t) => {
+      t.dismiss()
+      resolve('answered');
+    };
+
+    const handleDecline = (t) => {
+      t.dismiss()
+      resolve('declined');
+    };
+  });
+};
 
 export const createModalContext=createContext<any>(null)
 export const createDialContext=createContext<any>(null)
@@ -99,7 +148,8 @@ const CallScreen = () => {
         peer.on('call',async call=>{
             console.log("user stream is :",userStream)
             if(!video.current) return
-            const answer=confirm('Ringing !!! Click Ok to answer call')
+            const answer=await notify()
+            console.log(answer)
             if(answer){
                 const stream=await getStream()
                 call.answer(await stream)
@@ -130,7 +180,14 @@ const CallScreen = () => {
                 fontWeight:'bold'
               }
             })
-            setPeerId(err.type)
+            if(err.type=='peer-unavailable'){
+              toast.error('Peer not Available Get a New Remote Peer ID ',{
+                style:{
+                  fontWeight:'bold'
+                }
+              })
+            }
+            setPeerId('Error')
         })
 
         peer.on('connection',conn=>{
