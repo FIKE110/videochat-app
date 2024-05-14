@@ -14,6 +14,7 @@ video {
   width:400px;
   max-width: 400px;
   height:auto;
+  max-height: 100%;
   border-radius: 20px;
 }
 
@@ -173,7 +174,6 @@ video {
     width:100dvw;
     padding:0px;
     margin:0px;
-    height: 100dvh;
   }
 
   #sidebar{
@@ -239,7 +239,8 @@ video {
     border:thin black solid;
     width:320px;
     max-width: 320px;
-    height:auto;
+    height: auto;
+    max-height: 320px;
     border-radius: 20px;
   }
 

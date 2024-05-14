@@ -49,11 +49,11 @@ const CallScreen = () => {
    const connectionRef=useRef<DataConnection | null>(null)
    const [openExtraModal,setOpenExtraModal] = useState(false)
 
-   function createNewPeer(){
+   function createNewPeer(onload?:true){
     const onPeerCreated = new Event('onpeercreated');
     const onPeerCreatedError = new Event('onpeercreatederror');
       const searchParams = new URLSearchParams(location.search);
-      const query = searchParams.get('peer-id');
+      const query = onload ? searchParams.get('peerid') : null;
       const peer=new Peer(peerOptions)
 
 
@@ -308,7 +308,7 @@ const CallScreen = () => {
   };
 
    useEffect(()=>{
-    createNewPeer()
+    createNewPeer(true)
    },[]
    )
 

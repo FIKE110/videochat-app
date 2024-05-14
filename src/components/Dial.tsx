@@ -34,8 +34,7 @@ export default function Dial() {
   const actions = [
   { icon: <ViewDayIcon />, name: 'Extras' ,handler:() => setOpenExtraModal(true)},
   { icon: <ShareIcon />, name: 'Share' ,handler:()=>shareLink(peerId)},
-  { icon: <FileCopyIcon />, name: 'Copy link',handler:()=>copyToClipBoard(window.location+'?peer-id='+peerId,
-
+  { icon: <FileCopyIcon />, name: 'Copy link',handler:()=>copyToClipBoard( `${window.location.origin}/call?peerid=${peerId}`,
   'Call Link Successfully copied to clipboard'
   ) },
    { icon: <ChatBubbleIcon />, name: 'Chat',handler:()=>setOpenModal(true) },
