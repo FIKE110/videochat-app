@@ -9,14 +9,13 @@ import { useContext } from 'react';
 import { createDialContext } from '../screen/CallScreen';
 import { copyToClipBoard } from '../screen/CallScreen';
 import toast from 'react-hot-toast';
-import { PeerErrorType } from 'peerjs';
 
 const shareLink=async (peerId:string)=>{
   console.log(window.location)
   try {
     await navigator.share({
-      title: "Test",
-      text: "This is a test share",
+      title: "Video buddy Share Link",
+      text: "Use this link to call yout video buddy",
       url: `${window.location.origin}/call?peerid=${peerId}`,
     });
   } catch (err:any) {
@@ -46,7 +45,7 @@ export default function Dial() {
     }
     else{
        copyToClipBoard( `${window.location.origin}/call?peerid=${peerId}`,
- `Call Link Successfully copied to clipboard ${peerId in PeerErrorType}`
+ `Call Link Successfully copied to clipboard`
   )
     }
     }},

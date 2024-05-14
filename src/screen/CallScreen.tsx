@@ -5,10 +5,13 @@ import Video from '../components/Video'
 import BasicModal from '../components/ChatBar'
 import Toast from '../components/Toast'
 import Dial from '../components/Dial'
-import toast, { ToastType, Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import NotficationMusic from '../assets/happy-pop-3-185288.mp3'
 import ExtraComponentModal from '../components/ExtrasComponent'
 import { Box, Button, Typography } from '@mui/material'
+import Ringtone from '../assets/dejan_zvuk.mp3'
+import CallIcon from '@mui/icons-material/Call';
+import CallEndIcon from '@mui/icons-material/CallEnd';
 
 export type chatsType={
   id:string,
@@ -16,28 +19,28 @@ export type chatsType={
   message:string
 }
 
-const notify = () => {
+const notify = (audioRef:any) => {
+  audioRef.current.play()
+  setTimeout(()=>audioRef.current.pause(),10000)
   return new Promise((resolve) => {
-  const toastRef= toast((t) => (
+   toast((t) => (
       <Box>
         <Typography>
           Ringing !!! Answer or Decline Call
         </Typography>
-        <audio autoPlay loop>
-          <source src="path/to/your/ringtone.mp3" type="audio/mpeg" />
-          Your browser does not support the audio element.
-        </audio>
         <Box sx={{display:'flex',justifyContent:'center',alignItems:'center',gap:2,paddingTop:2}}>
            <Button
            size='small'
            color='success'
            variant='contained'
+           endIcon={<CallIcon />}
         sx={{color:'white',fontSize:'12px'}}
         onClick={() => handleAnswer(t)}>Answer</Button>
         <Button 
         size='small'
         color='error'
         variant='contained'
+        endIcon={<CallEndIcon />}
         sx={{color:'white',fontSize:'12px'}}
          onClick={() => handleDecline(t)}>Decline</Button>
         </Box>
@@ -48,18 +51,23 @@ const notify = () => {
         fontWeight:'bold',
         backgroundColor:''
       },
-      duration:8000,
-      position:'top-center'
+      duration:10000,
+      position:'top-center',
+
     });
 
-    const handleAnswer = (t) => {
-      t.dismiss()
+    const handleAnswer = (t:any) => {
+      toast.dismiss(t.id)
+      audioRef.current.pause()
       resolve('answered');
+      
     };
 
-    const handleDecline = (t) => {
-      t.dismiss()
+    const handleDecline = (t:any) => {
+      toast.dismiss(t.id)
+      audioRef.current.pause()
       resolve('declined');
+      
     };
   });
 };
@@ -82,6 +90,7 @@ export const copyToClipBoard=(text:string,message:string)=>{
 
 const CallScreen = () => {
    const video = useRef<HTMLVideoElement>(null)
+   const ringtoneRef=useRef<HTMLAudioElement>(null)
    const notificationAudioRef=useRef<HTMLAudioElement>(null)
    const InputMessageRef=useRef<HTMLInputElement>(null)
    const [openModal,setOpenModal]=useState(false)
@@ -148,9 +157,9 @@ const CallScreen = () => {
         peer.on('call',async call=>{
             console.log("user stream is :",userStream)
             if(!video.current) return
-            const answer=await notify()
+            const answer=await notify(ringtoneRef)
             console.log(answer)
-            if(answer){
+            if(answer == 'answered'){
                 const stream=await getStream()
                 call.answer(await stream)
                 setUserStream(await stream)
@@ -409,7 +418,10 @@ const CallScreen = () => {
     </div>
     </div>
     <audio ref={notificationAudioRef} src={NotficationMusic} />
-   
+    <audio ref={ringtoneRef}>
+          <source src={Ringtone} type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
     </div>
     </>
   )
