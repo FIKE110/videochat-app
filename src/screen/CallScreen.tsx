@@ -123,10 +123,14 @@ const CallScreen = () => {
           setPeerId('Error')
         })
 
-        peer.on('error',(err:Error)=>{
+        peer.on('error',(err)=>{
             callEvent('peernotcreated')
-            console.log('error dey oo')
-            setPeerId(err.name)
+            toast.error('Error occurred of type '+err.type,{
+              style:{
+                fontWeight:'bold'
+              }
+            })
+            setPeerId(err.type)
         })
 
         peer.on('connection',conn=>{
@@ -145,7 +149,7 @@ const CallScreen = () => {
    const disconnectPeer=()=>{
     if(peerRef.current){
 
-      toast.success('Peer successfully disconnected',{
+      toast.error('Peer  disconnected from PeerServer ',{
         style:{
           fontWeight:'bold'
         }
