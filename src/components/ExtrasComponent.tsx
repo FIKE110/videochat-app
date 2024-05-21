@@ -8,7 +8,7 @@ import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import { copyToClipBoard, createModalContext } from '../screen/CallScreen';
 
 const style = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',

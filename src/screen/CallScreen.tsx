@@ -1,11 +1,11 @@
-import { createContext, useEffect, useRef ,useState} from 'react'
+import { RefObject,createContext,useEffect, useRef ,useState} from 'react'
 import Peer, { DataConnection, PeerOptions } from 'peerjs'
 import SideBar from '../components/SideBar'
 import Video from '../components/Video'
 import BasicModal from '../components/ChatBar'
-import Toast from '../components/Toast'
 import Dial from '../components/Dial'
-import toast, { Toaster } from 'react-hot-toast';
+import Toast from '../components/Toast'
+import toast, { ToastOptions, Toaster } from 'react-hot-toast';
 import NotficationMusic from '../assets/happy-pop-3-185288.mp3'
 import ExtraComponentModal from '../components/ExtrasComponent'
 import { Box, Button, Typography } from '@mui/material'
@@ -19,11 +19,28 @@ export type chatsType={
   message:string
 }
 
-const notify = (audioRef:any) => {
-  audioRef.current.play()
-  setTimeout(()=>audioRef.current.pause(),10000)
+interface AppContextType {
+  sendMessage?: (text: string) => void;
+  InputMessageRef?: React.RefObject<HTMLInputElement>;
+  chats?: chatsType[]; // Ensure ChatType is defined appropriately
+  peerId?: string;
+  openModal?: boolean;
+  setOpenModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  openExtraModal?: boolean;
+  setOpenExtraModal?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+
+
+
+const notify = (audioRef:RefObject<HTMLAudioElement>) => {
+  if(audioRef){
+    audioRef.current?.play()
+   setTimeout(()=>audioRef.current?.pause(),10000)
+  }
+  
   return new Promise((resolve) => {
-   toast((t) => (
+   toast((t:ToastOptions) => (
       <Box>
         <Typography>
           Ringing !!! Answer or Decline Call
@@ -56,24 +73,24 @@ const notify = (audioRef:any) => {
 
     });
 
-    const handleAnswer = (t:any) => {
+    const handleAnswer = (t:ToastOptions) => {
       toast.dismiss(t.id)
-      audioRef.current.pause()
+      audioRef.current?.pause()
       resolve('answered');
       
     };
 
-    const handleDecline = (t:any) => {
+    const handleDecline = (t:ToastOptions) => {
       toast.dismiss(t.id)
-      audioRef.current.pause()
+      audioRef.current?.pause()
       resolve('declined');
       
     };
   });
 };
 
-export const createModalContext=createContext<any>(null)
-export const createDialContext=createContext<any>(null)
+export const createModalContext=createContext<AppContextType | null>(null)
+export const createDialContext=createContext<AppContextType | null>(null)
 
 export const copyToClipBoard=(text:string,message:string)=>{
   navigator.clipboard.writeText(text)
@@ -379,8 +396,7 @@ const CallScreen = () => {
 
    useEffect(()=>{
     createNewPeer(true)
-   },[]
-   )
+   },[])
 
 
   return (
@@ -403,7 +419,8 @@ const CallScreen = () => {
         rightBtnFun={toggleRemoteAudio}/>
     </div>
     <div id='dial-container'>
-      <createModalContext.Provider value={{sendMessage,InputMessageRef,chats,peerId,openModal,setOpenModal,openExtraModal,setOpenExtraModal}}>
+      <createModalContext.Provider 
+      value={{sendMessage,InputMessageRef,chats,peerId,openModal,setOpenModal,openExtraModal,setOpenExtraModal}}>
       <BasicModal />
       <ExtraComponentModal />
     </createModalContext.Provider>
