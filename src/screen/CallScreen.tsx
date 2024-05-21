@@ -19,18 +19,6 @@ export type chatsType={
   message:string
 }
 
-interface AppContextType {
-  sendMessage?: (text: string) => void;
-  InputMessageRef?: React.RefObject<HTMLInputElement>;
-  chats?: chatsType[]; // Ensure ChatType is defined appropriately
-  peerId?: string;
-  openModal?: boolean;
-  setOpenModal?: React.Dispatch<React.SetStateAction<boolean>>;
-  openExtraModal?: boolean;
-  setOpenExtraModal?: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-
 
 
 const notify = (audioRef:RefObject<HTMLAudioElement>) => {
@@ -89,8 +77,8 @@ const notify = (audioRef:RefObject<HTMLAudioElement>) => {
   });
 };
 
-export const createModalContext=createContext<AppContextType | null>(null)
-export const createDialContext=createContext<AppContextType | null>(null)
+export const createModalContext=createContext<any>(null)
+export const createDialContext=createContext<any>(null)
 
 export const copyToClipBoard=(text:string,message:string)=>{
   navigator.clipboard.writeText(text)
