@@ -6,12 +6,13 @@ import FaceBookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/X'
 import { routes } from './Header';
 import { NavLink } from 'react-router-dom';
+import { useDeviceSmall } from '../hooks/media';
 
 const useStyles = makeStyles(() => ({
   footer: {
     backgroundColor: '#7a1bad',
     color: 'white',
-    padding: 20,
+    padding:useDeviceSmall() ? 0 :20,
     marginTop:'30px',
     bottom: 0,
     width: '100%',
@@ -31,10 +32,12 @@ const Footer = () => {
   return (
     <Box className={classes.footer}>
       <Box>
-        <Box sx={{display:'flex',justifyContent:'center',alignItems:'center'}}>
+        <Box sx={{display:'flex',flexDirection:useDeviceSmall() ? 'column' : 'row',justifyContent:'center',alignItems:'center'}}>
           <Typography variant='h5'>Subscribe to our new letter to get update</Typography>
           <Box sx={{height:"30px",padding:6,display:'flex',
           gap:1
+          ,
+          flexDirection:useDeviceSmall()? 'column':'row'
           ,justifyContent:'center',alignItems:'center'}}>
             <input type='email' placeholder='Enter your email address' 
             style={{width:'300px',padding:10,paddingLeft:20,outline:'none'}}/>
@@ -68,7 +71,8 @@ const Footer = () => {
         © {new Date().getFullYear()} P2P Chat App. All rights reserved.
       </Typography>
       <Typography variant="body2">
-        <Link href="/terms" className={classes.link}>Terms of Service</Link> | <Link href="/privacy" className={classes.link}>Privacy Policy</Link>
+        <Link href="/terms"  className={classes.link}>
+        Terms of Service</Link> | <Link href="/privacy" className={classes.link}>Privacy Policy</Link>
       </Typography>
       <Typography variant='body2' sx={{paddingTop:3}}>Created by Chihurum Ikechukwu Fortune</Typography>
     </Box>
