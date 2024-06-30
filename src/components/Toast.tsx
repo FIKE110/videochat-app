@@ -15,7 +15,7 @@ export default function  Toast({open,setOpen}:{open:boolean,setOpen:Function}) {
 
   return (
     <div>
-      <Snackbar open={open} autoHideDuration={1500} onClose={handleClose} anchorOrigin={{ vertical:'top', horizontal:'right' }}
+      <Snackbar open={open} autoHideDuration={15500} onClose={handleClose} anchorOrigin={{ vertical:'top', horizontal:'right' }}
 >
         <Alert
           onClose={handleClose}

@@ -40,12 +40,10 @@
         align-items: center;
     }
     body{
-        background-color: red;
         width:100%;
         overflow-x: hidden;
     }
     html{
-        background-color: red;
         padding: 0px;
         margin:0px;
         width:100vw;

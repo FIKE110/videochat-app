@@ -15,7 +15,7 @@ const SideBar = ({peerId,call,createNewPeer,disconnectPeer}:
 
   return (
     <div id="sidebar">
-        <div style={{width:'100%'}}>
+        <div style={{width:'100%',marginTop:40}}>
             <div id='input-container' style={{width:'100%',display:'flex',justifyContent:'center',
             alignItems:'center'
         }}>

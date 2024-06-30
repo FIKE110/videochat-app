@@ -3,7 +3,7 @@ import videoIcon from '../assets/icons8-camera-off-64.png'
 import muteMicIcon from '../assets/icons8-mute-50.png'
 import unMuteIcon from '../assets/icons8-mute-unmute-50.png'
 
-const Video = ({videoRef,streamStarted,user,leftBtnFun,showVideo,rightBtnFun,id}:
+const MobileVideo = ({videoRef,streamStarted,user,leftBtnFun,showVideo,rightBtnFun,id}:
   {videoRef:React.RefObject<HTMLVideoElement>,user?:boolean,
     id:string,
     showVideo:boolean,
@@ -47,4 +47,4 @@ const Video = ({videoRef,streamStarted,user,leftBtnFun,showVideo,rightBtnFun,id}
   )
 }
 
-export default Video
+export default MobileVideo

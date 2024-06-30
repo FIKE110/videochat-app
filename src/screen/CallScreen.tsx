@@ -8,10 +8,12 @@ import Toast from '../components/Toast'
 import toast, { ToastOptions, Toaster } from 'react-hot-toast';
 import NotficationMusic from '../assets/happy-pop-3-185288.mp3'
 import ExtraComponentModal from '../components/ExtrasComponent'
-import { Box, Button, Typography } from '@mui/material'
+import {  Box, Button, Typography } from '@mui/material'
 import Ringtone from '../assets/dejan_zvuk.mp3'
 import CallIcon from '@mui/icons-material/Call';
 import CallEndIcon from '@mui/icons-material/CallEnd';
+import { useDeviceSmall } from '../hooks/media'
+import SimpleBottomNavigation from '../components/BottomNav'
 
 export type chatsType={
   id:string,
@@ -111,6 +113,7 @@ const CallScreen = () => {
    const [userStream,setUserStream] = useState<MediaStream>()
    const connectionRef=useRef<DataConnection | null>(null)
    const [openExtraModal,setOpenExtraModal] = useState(false)
+   const [onCall,setOnCall]=useState(false)
 
    function createNewPeer(onload?:true){
     const onPeerCreated = new Event('onpeercreated');
@@ -118,8 +121,6 @@ const CallScreen = () => {
       const searchParams = new URLSearchParams(location.search);
       const query = onload ? searchParams.get('peerid') : null;
       const peer=new Peer(peerOptions)
-
-
       function callEvent(state:string) {
         // Trigger the event
         if(state=='peercreated'){
@@ -168,6 +169,7 @@ const CallScreen = () => {
                 const stream=await getStream()
                 call.answer(await stream)
                 setUserStream(await stream)
+                setOnCall(true)
                 video.current.srcObject=await stream
                 setUserStreamStarted(true)
                 stream.getVideoTracks()[0].enabled=showVideo
@@ -312,12 +314,11 @@ const CallScreen = () => {
 
    const getStream= async ()=>{
     const stream = await navigator.mediaDevices.getUserMedia(constraints)
-
-        return stream
-
+    return stream
    }
 
    const call=async (remoteId:string)=>{
+    setOnCall(true)
     if(peerId === 'Generating Peer ID . . .' || peerId === 'Error'){
       toast.error('No peerId has been assigned to make a call',{
         style:{
@@ -349,6 +350,7 @@ const CallScreen = () => {
     call && call.on('stream',(remoteStream:MediaStream)=>{
         if(!remoteVideo.current) return
         console.log("Callers Stream is ",remoteStream)
+        setOnCall(true)
         remoteVideo.current.srcObject=remoteStream
         setRemoteStreamStarted(true)
         setRemoteStream(remoteStream)
@@ -371,9 +373,10 @@ const CallScreen = () => {
   */
   const constraints = {
     video: {
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
-      facingMode: 'environment' // or 'user' for front-facing camera
+      
+    //  width: { ideal: 1280 },
+     // height: { ideal: 720 },
+    //  facingMode: 'environment' // or 'user' for front-facing camera
     },
     audio: {
       echoCancellation: true,
@@ -384,24 +387,40 @@ const CallScreen = () => {
 
    useEffect(()=>{
     createNewPeer(true)
+    //toggleRemoteVideo()
    },[])
 
 
   return (
     <>
-    <div id='main-container' style={{
+
+    {
+      useDeviceSmall()?
+      <div style={{position:'relative'}}>
+        <Toaster position='top-right' />
+     <SideBar peerId={peerId}  call={call} 
+       createNewPeer={createNewPeer} disconnectPeer={disconnectPeer}/>
+       <div id="mobile-video-holder" style={{zIndex: onCall ? 3: -1}}>
+        <video ref={video} id='user' autoPlay></video>
+        <video ref={remoteVideo} id='remote' autoPlay></video>
+       </div>
+       <SimpleBottomNavigation index={onCall? 4 : -1} toggleVideo={toggleVideo} toggleAudio={toggleAudio}/>
+      </div>
+      :
+    <Box id='main-container' style={{
         display:'flex',
-        height:'520px',
+        height:'100vh',
+        overflow:'hidden',
     }
     }>
-     <Toaster position='top-right'/>
-    <SideBar peerId={peerId}  call={call} createNewPeer={createNewPeer} disconnectPeer={disconnectPeer}/>
-    <div style={{display:'flex',flexDirection:'column'}}>
+     <Toaster position='top-right' />
+     <SideBar peerId={peerId}  call={call} createNewPeer={createNewPeer} disconnectPeer={disconnectPeer}/>
+     <div id="dialvideo-holder" style={{display:'flex',flexDirection:'column'}}>
        <div id="screencontainer"> 
-        <Video videoRef={video} 
+        <Video id='user' videoRef={video} 
         streamStarted={userStreamStarted}
         user leftBtnFun={toggleVideo} showVideo rightBtnFun={toggleAudio}/>
-        <Video videoRef={remoteVideo} 
+        <Video id='remote' videoRef={remoteVideo} 
         streamStarted={remoteStreamStarted}
         leftBtnFun={toggleRemoteVideo} showVideo={false} 
         rightBtnFun={toggleRemoteAudio}/>
@@ -427,9 +446,10 @@ const CallScreen = () => {
           <source src={Ringtone} type="audio/mpeg" />
           Your browser does not support the audio element.
         </audio>
-    </div>
+    </Box>}
     </>
   )
 }
+
 
 export default CallScreen

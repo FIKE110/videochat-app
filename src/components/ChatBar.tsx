@@ -9,6 +9,7 @@ import SwiperComponent from './SwiperComponent';
 import { chatsType, createModalContext } from '../screen/CallScreen';
 import IconButton from '@mui/joy/IconButton';
 import { useContext } from 'react';
+import { useMediaQuery } from '@mui/material';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -23,9 +24,23 @@ const style = {
   p: 4,
 };
 
+const minStyle = {
+  top:'0px',
+  left:'0px',
+  width:'100%',
+  height:'100%',
+  p:0,
+  display:'flex',
+  justifyContent:'center',
+  alignItems:'center',
+  bgcolor: 'background.paper',
+}
+
 function BasicModal() {
   const {openModal,setOpenModal} = useContext(createModalContext)
   const handleClose = () => setOpenModal(false);
+  const isSmall=useMediaQuery('(min-width:1000px)')
+
 
   return (
     <div>
@@ -35,7 +50,7 @@ function BasicModal() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={isSmall ? style : minStyle}>
            <ChatBar handleClose={handleClose}/>
         </Box>
       </Modal>
@@ -47,10 +62,16 @@ function BasicModal() {
 const ChatBar = (props:any) => {
   const useModalContext=React.useContext(createModalContext)
   const {InputMessageRef,sendMessage,chats} =useModalContext
+  const isSmall=useMediaQuery('(min-width:1000px)')
  
   return (
-    <div id='chat-box'>
-          <Box sx={{display:'flex',justifyContent:'flex-end'}}>
+    <div id='chat-box' style={{
+      height:'100%',
+      paddingTop:!isSmall ? '20px' : '0px'
+    }}>
+          <Box sx={{display:'flex',justifyContent:'flex-end',
+          padding : !isSmall ? 2 : 0,
+          }}>
           <IconButton style={{width:'15px',height:'15px'}} variant="solid"
           onClick={props.handleClose}
           >
@@ -58,13 +79,15 @@ const ChatBar = (props:any) => {
 <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="48px" height="48px"><path fill="#F44336" d="M21.5 4.5H26.501V43.5H21.5z" transform="rotate(45.001 24 24)"/><path fill="#F44336" d="M21.5 4.5H26.5V43.501H21.5z" transform="rotate(135.008 24 24)"/></svg>
         </IconButton>
       </Box>
-        <Box sx={{
-            height:'400px',
+        <Box 
+        style={{height:isSmall ? '400px' :'80%'}}
+        sx={{
             display:'flex',
             flexDirection:'column'
         }}>
             <Box sx={{
                 flex:10,
+                padding : !isSmall ? 3 : 0
             }}>
                 <SwiperComponent>
                   {chats.map((message:chatsType)=>(
@@ -74,15 +97,18 @@ const ChatBar = (props:any) => {
             </Box>
             <Box sx={{
             display:'flex',
+            padding : !isSmall ? 3 : 0,
             flex:1,
-            paddingTop:'22px',
+            paddingTop:isSmall ? '22px' : '0px',
             height:'50px',
             flexDirection:'row',
             justifyContent:'center',
             alignItems:'center',
             gap:2,
         }}>
-            <Textarea style={{flex:8}} 
+            <Textarea style={{flex:8,
+
+            }} 
             autoFocus
             onKeyDown={e=>{
               if(e.key==='Enter'){
