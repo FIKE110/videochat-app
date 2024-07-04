@@ -162,7 +162,6 @@ const CallScreen = () => {
 
         peer.on('call',async call=>{
             console.log("user stream is :",userStream)
-            if(!video.current) return
             const answer=await notify(ringtoneRef)
             console.log(answer)
             if(answer == 'answered'){
@@ -170,12 +169,13 @@ const CallScreen = () => {
                 call.answer(await stream)
                 setUserStream(await stream)
                 setOnCall(true)
-                video.current.srcObject=await stream
                 setUserStreamStarted(true)
                 stream.getVideoTracks()[0].enabled=showVideo
-                call.on('stream',remoteStream=>{
+                call.on('stream',async (remoteStream)=>{
                 if(!remoteVideo.current) return
                 remoteVideo.current.srcObject=remoteStream
+                if(!video.current) return
+                video.current.srcObject=await stream
                 console.log("Answer Stream is ",remoteStream)
                 setRemoteStream(remoteStream)
                 setRemoteStreamStarted(true)
@@ -318,7 +318,6 @@ const CallScreen = () => {
    }
 
    const call=async (remoteId:string)=>{
-    setOnCall(true)
     if(peerId === 'Generating Peer ID . . .' || peerId === 'Error'){
       toast.error('No peerId has been assigned to make a call',{
         style:{
@@ -344,14 +343,14 @@ const CallScreen = () => {
     if(!video.current) return
     const stream=await getStream()
     stream.getVideoTracks()[0].enabled=showVideo
-    video.current.srcObject=stream
     const call=peerRef.current?.call(remoteId,stream)
     console.log("Making call:", call)
     call && call.on('stream',(remoteStream:MediaStream)=>{
-        if(!remoteVideo.current) return
+        if(!(remoteVideo.current && video.current)) return
         console.log("Callers Stream is ",remoteStream)
         setOnCall(true)
         remoteVideo.current.srcObject=remoteStream
+        video.current.srcObject=stream
         setRemoteStreamStarted(true)
         setRemoteStream(remoteStream)
     })
