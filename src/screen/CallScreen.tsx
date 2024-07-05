@@ -399,7 +399,7 @@ const CallScreen = () => {
         <Toaster position='top-right' />
      <SideBar peerId={peerId}  call={call} 
        createNewPeer={createNewPeer} disconnectPeer={disconnectPeer}/>
-       <div id="mobile-video-holder" style={{zIndex: onCall ? 3: -1}}>
+       <div id="mobile-video-holder" style={{zIndex: onCall ? 3: -1,backgroundColor:'black'}}>
         <video ref={video} id='user' autoPlay></video>
         <video ref={remoteVideo} id='remote' autoPlay></video>
        </div>
